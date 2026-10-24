@@ -1,0 +1,197 @@
+﻿@model DBSportStore.Models.Product
+
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_StoreLayout.cshtml";
+}
+
+<h2>Thêm sản phẩm</h2>
+
+@using (Html.BeginForm("Create", "Products", FormMethod.Post,
+    new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Thông tin sản phẩm</h4>
+        <hr />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <!-- Tên sản phẩm -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProductName,
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.ProductName,
+                    new { htmlAttributes = new { @class = "form-control" } })
+
+                @Html.ValidationMessageFor(model => model.ProductName,
+                    "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Mô tả -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description,
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Description,
+                    new { htmlAttributes = new { @class = "form-control" } })
+
+                @Html.ValidationMessageFor(model => model.Description,
+                    "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Danh mục -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.CategoryID, "Danh mục",
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.DropDownList("CategoryID", null,
+                    htmlAttributes: new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(model => model.CategoryID,
+                    "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Giá -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.Price,
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Price,
+                    new { htmlAttributes = new { @class = "form-control" } })
+
+                @Html.ValidationMessageFor(model => model.Price,
+                    "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Chọn hình ảnh -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.ImageUrl, "Chọn hình ảnh",
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <input type="file"
+                       name="imageFile"
+                       id="imageFile"
+                       accept=".jpg,.jpeg,.png"
+                       class="form-control" />
+
+                @Html.ValidationMessage("imageFile",
+                    new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Xem trước hình ảnh -->
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <img id="imagePreview"
+                     src="#"
+                     alt="Xem trước hình ảnh"
+                     style="display:none; max-width:200px; max-height:200px; margin-top:10px;" />
+            </div>
+        </div>
+
+        <!-- Số lượng tồn kho -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.StockQuantity,
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.StockQuantity,
+                    new { htmlAttributes = new { @class = "form-control" } })
+
+                @Html.ValidationMessageFor(model => model.StockQuantity,
+                    "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <!-- Trạng thái -->
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsActive,
+                htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.IsActive)
+
+                    @Html.ValidationMessageFor(model => model.IsActive,
+                        "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Nút thêm sản phẩm -->
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit"
+                       value="Create"
+                       class="btn btn-primary" />
+
+                @Html.ActionLink("Quay lại danh sách",
+                    "Index", null,
+                    new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+<!-- JavaScript xem trước ảnh -->
+<script>
+    (function () {
+        var imageInput = document.getElementById("imageFile");
+        var preview = document.getElementById("imagePreview");
+
+        if (imageInput && preview) {
+            imageInput.addEventListener("change", function () {
+                var file = this.files && this.files[0];
+
+                if (!file) {
+                    preview.removeAttribute("src");
+                    preview.style.display = "none";
+                    return;
+                }
+
+                var allowedTypes = ["image/jpeg", "image/png"];
+
+                if (allowedTypes.indexOf(file.type) === -1) {
+                    alert("Vui lòng chọn ảnh JPG, JPEG hoặc PNG.");
+                    this.value = "";
+                    preview.removeAttribute("src");
+                    preview.style.display = "none";
+                    return;
+                }
+
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("Dung lượng ảnh không được vượt quá 2 MB.");
+                    this.value = "";
+                    preview.removeAttribute("src");
+                    preview.style.display = "none";
+                    return;
+                }
+
+                if (preview.dataset.objectUrl) {
+                    URL.revokeObjectURL(preview.dataset.objectUrl);
+                }
+
+                var objectUrl = URL.createObjectURL(file);
+                preview.dataset.objectUrl = objectUrl;
+                preview.src = objectUrl;
+                preview.style.display = "block";
+            });
+        }
+    })();
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,57 @@
+﻿@* ===== LAYOUT DÙNG CHUNG CHO TOÀN WEBSITE ===== *@
+<!DOCTYPE html>
+<html>
+@* HEAD: tiêu đề, CSS và script dùng chung *@
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - SportStore</title> @* Tiêu đề thay đổi theo từng View *@
+    @Styles.Render("~/Content/css") @* CSS mặc định của project *@
+    <link href="~/Content/sportstore.css" rel="stylesheet" /> @* CSS riêng của SportStore *@
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+@* BODY: phần giao diện hiển thị trên trình duyệt *@
+<body>
+    <!-- Thanh thông báo phía trên cùng -->
+    <div class="store-topbar">
+        <div class="container">Miễn phí giao hàng cho đơn từ 1.000.000đ</div>
+    </div>
+
+    <!-- Header: logo và menu điều hướng -->
+    <header class="store-header">
+        <div class="container">
+            <a class="brand" href="@Url.Action("Index","Store")">SPORT<span>STORE</span></a>
+
+            <!-- Menu chính của website -->
+           
+            <nav class="store-nav">
+                @Html.ActionLink("Trang chủ", "Index", "Store")
+                <a href="@Url.Action("Index", "Store")#featured-products">Sản phẩm</a>
+                <a href="@Url.Action("Index", "Store")#category-panel">Danh mục</a>
+                <a href="#">Giỏ hàng</a>
+                <a href="#">Đăng nhập</a>
+            </nav>
+           
+
+        </div>
+    </header>
+
+    <!-- Nội dung của từng View sẽ được chèn vào đây -->
+    <main class="container">
+        @RenderBody() @* Chèn nội dung View hiện tại *@
+    </main>
+
+    <!-- Footer dùng chung -->
+    <footer class="store-footer">
+        <div class="container">
+            <strong>SPORTSTORE</strong><br />
+            Website thương mại thực hành ASP.NET MVC5
+        </div>
+    </footer>
+
+    @* Nạp JavaScript ở cuối trang *@
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false) @* Cho phép View thêm script riêng *@
+</body>
+</html>
